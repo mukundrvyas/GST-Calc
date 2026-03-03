@@ -1,0 +1,175 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>GST Calc - Just Click Computers</title>
+    <style>
+        :root { --bg: #f0f2f5; --card: #ffffff; --text: #333; --border: #ccc; --primary: #2196F3; }
+        .dark-mode { --bg: #1a1a1a; --card: #2d2d2d; --text: #e0e0e0; --border: #444; }
+        
+        body { font-family: 'Segoe UI', sans-serif; background-color: var(--bg); color: var(--text); margin: 0; padding: 5px; transition: 0.3s; display: flex; flex-direction: column; align-items: center; }
+        
+        .firm-header { text-align: center; margin-bottom: 2px; }
+        .firm-name { font-size: 1.1rem; font-weight: 800; color: var(--primary); margin: 0; text-transform: uppercase; }
+        .firm-sub { font-size: 0.65rem; font-weight: bold; opacity: 0.8; margin-bottom: 2px; color: var(--text); }
+
+        .container { width: 100%; max-width: 340px; }
+        .card { background: var(--card); padding: 8px 12px; border-radius: 8px; box-shadow: 0 2px 8px rgba(0,0,0,0.1); margin-bottom: 8px; border-top: 3px solid var(--primary); }
+        
+        .add-gst { border-top-color: #2196F3; }
+        .rem-gst { border-top-color: #ff9800; }
+        .discount-calc { border-top-color: #9c27b0; }
+        .perc-check { border-top-color: #009688; }
+
+        h2 { margin: 0 0 5px 0; font-size: 0.75rem; text-transform: uppercase; text-align: center; opacity: 0.9; }
+        .input-group { display: flex; align-items: center; justify-content: space-between; margin-bottom: 4px; }
+        label { font-size: 0.7rem; font-weight: bold; flex: 1; }
+        input { width: 50%; padding: 4px 8px; border: 1px solid var(--border); border-radius: 4px; box-sizing: border-box; font-size: 0.9rem; background: var(--card); color: var(--text); }
+        
+        .results { background: rgba(0,0,0,0.04); padding: 6px 10px; border-radius: 4px; margin-top: 4px; }
+        .res-row { display: flex; justify-content: space-between; margin-bottom: 2px; font-size: 0.8rem; }
+        .total-row { display: flex; justify-content: space-between; margin-top: 3px; padding-top: 3px; border-top: 1px solid var(--border); font-weight: bold; font-size: 0.95rem; }
+        
+        .blue { color: #2196F3; }
+        .orange { color: #ff9800; }
+        .green { color: #2e7d32; }
+        .purple { color: #9c27b0; }
+        .teal { color: #009688; }
+        
+        .theme-btn { cursor: pointer; background: #555; color: white; border: none; padding: 3px 10px; border-radius: 10px; font-size: 0.6rem; font-weight: bold; margin-bottom: 5px; }
+    </style>
+</head>
+<body>
+
+    <div class="firm-header">
+        <h1 class="firm-name">Just Click Computers</h1>
+        <div class="firm-sub">GST & DISCOUNT CALCULATOR</div>
+    </div>
+
+    <button class="theme-btn" onclick="document.body.classList.toggle('dark-mode')">DARK / LIGHT MODE</button>
+
+    <div class="container">
+        <div class="card add-gst">
+            <h2>Add GST</h2>
+            <div class="input-group">
+                <label>Price</label>
+                <input type="number" id="a_net" onkeyup="doMath()" placeholder="0">
+            </div>
+            <div class="input-group">
+                <label>GST %</label>
+                <input type="number" id="a_rate" value="18" onkeyup="doMath()">
+            </div>
+            <div class="results">
+                <div class="res-row"><span>GST:</span> <span id="a_gst">₹0.00</span></div>
+                <div class="total-row blue"><span>Total:</span> <span id="a_total">₹0.00</span></div>
+            </div>
+        </div>
+
+        <div class="card rem-gst">
+            <h2>Remove GST</h2>
+            <div class="input-group">
+                <label>Total Bill</label>
+                <input type="number" id="r_total" onkeyup="doMath()" placeholder="0">
+            </div>
+            <div class="input-group">
+                <label>GST %</label>
+                <input type="number" id="r_rate" value="18" onkeyup="doMath()">
+            </div>
+            <div class="results">
+                <div class="res-row"><span>Tax Incl:</span> <span id="r_gst" class="orange">₹0.00</span></div>
+                <div class="total-row green"><span>Base:</span> <span id="r_base">₹0.00</span></div>
+            </div>
+        </div>
+
+        <div class="card discount-calc">
+            <h2>Discount</h2>
+            <div class="input-group">
+                <label>Rate (Per Unit)</label>
+                <input type="number" id="d_price" onkeyup="doMath()" placeholder="0">
+            </div>
+            <div class="input-group">
+                <label>Quantity (NOS)</label>
+                <input type="number" id="d_qty" value="1" onkeyup="doMath()">
+            </div>
+            <div class="input-group">
+                <label>Disc 1 (%)</label>
+                <input type="number" id="d_per1" onkeyup="doMath()" placeholder="e.g. 10">
+            </div>
+            <div class="input-group">
+                <label>Disc 2 (%)</label>
+                <input type="number" id="d_per2" onkeyup="doMath()" placeholder="e.g. 8">
+            </div>
+            <div class="results">
+                <div class="res-row"><span>Unit Price:</span> <span id="d_unit">₹0.00</span></div>
+                <div class="total-row purple"><span>Total Value:</span> <span id="d_final">₹0.00</span></div>
+            </div>
+        </div>
+
+        <div class="card perc-check">
+            <h2>Percentage</h2>
+            <div class="input-group">
+                <label>Full Amount</label>
+                <input type="number" id="p_full" onkeyup="doMath()" placeholder="e.g. 1000">
+            </div>
+            <div class="input-group">
+                <label>Part Amount</label>
+                <input type="number" id="p_part" onkeyup="doMath()" placeholder="e.g. 200">
+            </div>
+            <div class="results">
+                <div class="res-row"><span>Difference:</span> <span id="p_diff">₹0.00</span></div>
+                <div class="total-row teal"><span>Result:</span> <span id="p_res">0%</span></div>
+            </div>
+        </div>
+    </div>
+
+<script>
+    function f(n) {
+        return "₹" + Number(n).toLocaleString('en-IN', {minimumFractionDigits: 2, maximumFractionDigits: 2});
+    }
+
+    function doMath() {
+        // ADD GST
+        let net = parseFloat(document.getElementById('a_net').value) || 0;
+        let aRate = parseFloat(document.getElementById('a_rate').value) || 0;
+        let gstAmt = (net * aRate) / 100;
+        document.getElementById('a_gst').innerText = f(gstAmt);
+        document.getElementById('a_total').innerText = f(net + gstAmt);
+
+        // REMOVE GST
+        let fullTotal = parseFloat(document.getElementById('r_total').value) || 0;
+        let rRate = parseFloat(document.getElementById('r_rate').value) || 0;
+        let base = fullTotal / (1 + (rRate / 100));
+        let tax = fullTotal - base;
+        document.getElementById('r_base').innerText = f(base);
+        document.getElementById('r_gst').innerText = f(tax);
+
+        // DISCOUNT (Series + Qty)
+        let rate = parseFloat(document.getElementById('d_price').value) || 0;
+        let qty = parseFloat(document.getElementById('d_qty').value) || 1;
+        let d1 = parseFloat(document.getElementById('d_per1').value) || 0;
+        let d2 = parseFloat(document.getElementById('d_per2').value) || 0;
+        
+        let unitAfterD1 = rate - (rate * d1 / 100);
+        let finalUnit = unitAfterD1 - (unitAfterD1 * d2 / 100);
+        let totalVal = finalUnit * qty;
+
+        document.getElementById('d_unit').innerText = f(finalUnit);
+        document.getElementById('d_final').innerText = f(totalVal);
+
+        // PERCENTAGE
+        let pFull = parseFloat(document.getElementById('p_full').value) || 0;
+        let pPart = parseFloat(document.getElementById('p_part').value) || 0;
+        if(pFull > 0) {
+            let pRes = (pPart / pFull) * 100;
+            document.getElementById('p_diff').innerText = f(pFull - pPart);
+            document.getElementById('p_res').innerText = pRes.toFixed(2) + "%";
+        } else {
+            document.getElementById('p_diff').innerText = "₹0.00";
+            document.getElementById('p_res').innerText = "0%";
+        }
+    }
+</script>
+
+</body>
+</html>
